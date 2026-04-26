@@ -1,21 +1,57 @@
-# 🐳 Docker Templates
+# .NET Clean Architecture API + PostgreSQL — Docker Template
 
-Ready-to-use Docker templates. Each branch is a standalone template — no shared history.
+Template dla Web API (.NET 9) w architekturze Clean Architecture z bazą PostgreSQL.
 
-## Templates
-
-| Branch | Stack | Database |
-|---|---|---|
-| `mvc-postgres` | ASP.NET MVC (.NET 9) | PostgreSQL 17 |
-| `django-oracle` | Django (Python 3.13) | Oracle Free 23c |
-| `dotnet-backend-postgres` | .NET 9 Clean Architecture API | PostgreSQL 17 |
-
-## Usage
+## Szybki start
 
 ```bash
-git clone --depth 1 -b <branch-name> https://github.com/user/docker-templates.git .
-rm -rf .git && cp .env.example .env && git init
+git clone --depth 1 -b dotnet-backend-postgres https://github.com/user/docker-templates.git .
+rm -rf .git
+cp .env.example .env
+# Uzupełnij .env swoimi wartościami
+git init
+```
+
+## Uruchomienie
+
+```bash
 docker compose up -d
 ```
 
-> Fill in `change_me` values in `.env` before running.
+API dostępne pod `http://localhost:8080`
+
+## Struktura projektu (Clean Architecture)
+
+Dostosuj nazwy projektów w `Dockerfile` — zamień `MyApp` na nazwę swojego projektu:
+
+```
+src/
+├── MyApp.Domain/           # Encje, interfejsy, reguły biznesowe
+├── MyApp.Application/      # Use cases, DTOs, serwisy aplikacji
+├── MyApp.Infrastructure/   # EF Core, repozytoria, zewnętrzne serwisy
+└── MyApp.API/              # Controllers, middleware, DI
+```
+
+## Connection String
+
+Przekazywany automatycznie przez `docker-compose.yml`:
+```
+Host=db;Port=5432;Database={DB};Username={USER};Password={PASS}
+```
+
+W kodzie odczytaj przez:
+```csharp
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+```
+
+## Zmienne środowiskowe
+
+| Zmienna | Opis | Domyślna |
+|---|---|---|
+| `ASPNETCORE_ENVIRONMENT` | Środowisko .NET | `Development` |
+| `API_PORT` | Port API | `8080` |
+| `POSTGRES_DB` | Nazwa bazy | `myapp` |
+| `POSTGRES_USER` | Użytkownik bazy | `myapp_user` |
+| `POSTGRES_PASSWORD` | Hasło bazy | — |
+| `POSTGRES_PORT` | Port bazy | `5432` |
