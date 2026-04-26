@@ -1,0 +1,51 @@
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myapp-django
+    ports:
+      - "${DJANGO_PORT:-8000}:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-myapp.settings}
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG:-False}
+      - ORACLE_HOST=db
+      - ORACLE_PORT=1521
+      - ORACLE_SERVICE=${ORACLE_SERVICE}
+      - ORACLE_USER=${ORACLE_USER}
+      - ORACLE_PASSWORD=${ORACLE_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  db:
+    image: gvenzl/oracle-free:23-slim
+    container_name: myapp-oracle
+    environment:
+      ORACLE_PASSWORD: ${ORACLE_SYS_PASSWORD}
+      APP_USER: ${ORACLE_USER}
+      APP_USER_PASSWORD: ${ORACLE_PASSWORD}
+    ports:
+      - "${ORACLE_PORT:-1521}:1521"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      - appnet
+    restart: unless-stopped
+
+volumes:
+  oracle_data:
+
+networks:
+  appnet:
+    driver: bridge

@@ -1,0 +1,28 @@
+# ── Środowisko ─────────────────────────────────────────────
+.env
+
+# ── Python ─────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+*.log
+
+# ── Django ─────────────────────────────────────────────────
+staticfiles/
+mediafiles/
+db.sqlite3
+
+# ── Docker ─────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── IDE ────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.DS_Store
