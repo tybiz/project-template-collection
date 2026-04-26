@@ -2,11 +2,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Kopiuj csproj i przywróć zależności (cache layer)
+# TODO: Replace "MyApp.MVC" with your project name (3 occurrences below + ENTRYPOINT)
 COPY ["src/MyApp.MVC/MyApp.MVC.csproj", "src/MyApp.MVC/"]
 RUN dotnet restore "src/MyApp.MVC/MyApp.MVC.csproj"
 
-# Kopiuj resztę i zbuduj
 COPY . .
 WORKDIR "/src/src/MyApp.MVC"
 RUN dotnet build "MyApp.MVC.csproj" -c Release -o /app/build
@@ -27,4 +26,5 @@ RUN chown -R appuser:appgroup /app
 USER appuser
 
 EXPOSE 8080
+# TODO: Replace "MyApp.MVC.dll" with your project name
 ENTRYPOINT ["dotnet", "MyApp.MVC.dll"]
