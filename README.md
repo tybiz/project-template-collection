@@ -1,4 +1,4 @@
-# 🐳 Docker Templates
+# 🐳 Docker Project Templates
 
 Ready-to-use Docker templates. Each branch is a standalone template — no shared history.
 
